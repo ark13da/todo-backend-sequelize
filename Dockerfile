@@ -1,23 +1,23 @@
 # Use an official Node.js runtime as the base image
-FROM node:16
+FROM node:18 as build-stage
 
-# Set the working directory in the container
-WORKDIR /usr/src/app
+# Set the working directory inside the container
+WORKDIR /app
 
-# Install global dependencies (e.g., typescript, nodemon)
-RUN npm install -g typescript nodemon
-
-# Copy package.json and package-lock.json
+# Copy the package.json and package-lock.json files
 COPY package*.json ./
 
-# Install app dependencies
-RUN npm install
+# Install the dependencies
+RUN npm install --production
 
-# Copy the rest of the application code
+# Copy the rest of the application code to the container
 COPY . .
+
+# Build the TypeScript code (assuming a build step is needed for production)
+RUN npm run build
 
 # Expose the application port
 EXPOSE 3000
 
-# Start the application in development mode
-CMD ["npm", "run", "dev"]
+# Start the application
+CMD ["node", "dist/server.js"]
